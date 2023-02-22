@@ -51,36 +51,32 @@ const signUpUser = asyncHandler(async (req, res) => {
 //login / auth user
 //Route - POST /api/users/login
 
-const loginUser = async (req, res) => {
-    console.log("loginUser");
-    const { username, password } = req.body;
+const loginUser = asyncHandler(async (req, res) => {
+    res.render("login", {});
+});
 
-    console.log(req.body);
-
+const openDashboard = asyncHandler(async (req, res) => {
     try {
-        const user = await User.findOne({ username: username });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        // Here you can check the user's password and authenticate the user
-        res.json({
-            _id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            token: generateToken(user.id),
+        const user = await User.findById(req.params.id);
+        res.render("dashboard", {
+            userData: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user.id),
+            },
         });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Internal server error" });
     }
-};
+});
 
 //get List of all users
 //Route GET /api/users
 
 const getUsers = asyncHandler(async (req, res) => {
-    console.log("getUsers");
     const users = await User.find();
     res.json(users);
 });
@@ -89,7 +85,6 @@ const getUsers = asyncHandler(async (req, res) => {
 //Route GET /api/users/:id
 
 const getUserById = asyncHandler(async (req, res) => {
-    console.log("getUserById");
     const user = await User.findById(req.params.id).select("-password");
     if (user) {
         res.json(user);
@@ -141,6 +136,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 export {
     signUpUser,
     loginUser,
+    openDashboard,
     getUsers,
     getUserById,
     updateUserById,
