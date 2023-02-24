@@ -4,6 +4,8 @@ import {
     signUpUser,
     loginUser,
     openDashboard,
+    openCreateProject,
+    openProject,
     getUsers,
     getUserById,
     updateUserById,
@@ -19,6 +21,10 @@ router.route("/signup").get(signUpUser);
 router.route("/login").get(loginUser);
 
 router.route("/dashboard/:id").get(openDashboard);
+
+router.route("/createProject/:id").get(openCreateProject);
+
+router.route("/project/:id").get(openProject);
 
 router
     .route("/:id")

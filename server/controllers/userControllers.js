@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
+import ProjectModel from "../models/projectModel.js";
 import generateToken from "../utils/generateToken.js";
 
 // Sign up a user
@@ -138,6 +139,33 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 });
 
+const createProject = asyncHandler(async (req, res) => {
+    const { name, description, userId } = req.body;
+
+    try {
+        const project = new ProjectModel({
+            projectName: name,
+            projectDescription: description,
+            user: userId,
+        });
+        await project.save();
+
+        console.log(project);
+
+        res.json({
+            projectData: {
+                _id: project._id.valueOf(),
+                projectName: project.projectName,
+                projectDescription: project.projectDescription,
+                user: project.user,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 export {
     signUpUser,
     loginUser,
@@ -145,4 +173,5 @@ export {
     getUserById,
     updateUserById,
     deleteUser,
+    createProject,
 };

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/dashboard_no_projects.css" />
+        <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+        <title>Bug Tracker</title>
+    </head>
+    <body>
+        <div class="no-project header center">
+            <img style="height: 250px" src="/images/favicon.png" />
+            <h1>Hello <%= userData.username %>,</h1>
+            <h4>
+                Welcome to the project management portal. Start by creating a
+                new Project
+            </h4>
+            <a
+                href="/client/users/createProject/<%= userData._id %>"
+                class="btn">
+                Create Your First Project<span></span
+            ></a>
+        </div>
+    </body>
+</html>

@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import ProjectModel from "../models/projectModel.js";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 
@@ -58,7 +59,60 @@ const loginUser = asyncHandler(async (req, res) => {
 const openDashboard = asyncHandler(async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        res.render("dashboard", {
+        const projects = await ProjectModel.find();
+        if (projects.length == 0) {
+            res.render("dashboard_no_projects", {
+                userData: {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    token: generateToken(user.id),
+                },
+            });
+        } else {
+            res.render("dashboard", {
+                projectsList: projects,
+                userData: {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role,
+                    token: generateToken(user.id),
+                },
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+const openProject = asyncHandler(async (req, res) => {
+    try {
+        console.log(req.url);
+
+        const project = await ProjectModel.findById(req.params.id);
+        res.render("project", {
+            projectData: {
+                _id: project._id.valueOf(),
+                projectName: project.projectName,
+                projectDescription: project.projectDescription,
+                user: project.user,
+            },
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "failed to create a project" });
+    }
+});
+
+const openCreateProject = asyncHandler(async (req, res) => {
+    try {
+        console.log(req.url);
+
+        const user = await User.findById(req.params.id);
+        res.render("createProject", {
             userData: {
                 _id: user._id,
                 username: user.username,
@@ -69,7 +123,7 @@ const openDashboard = asyncHandler(async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "failed to create a project" });
     }
 });
 
@@ -137,6 +191,8 @@ export {
     signUpUser,
     loginUser,
     openDashboard,
+    openCreateProject,
+    openProject,
     getUsers,
     getUserById,
     updateUserById,

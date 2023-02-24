@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/dashboard.css" />
-        <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
-        <title>Bug Tracker</title>
+        <title>Quick CSS List Hover Effects</title>
+        <link rel="stylesheet" type="text/css" href="/dashboard.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="/dashboard_no_projects.css" />
     </head>
     <body>
-        <!-- <h1>Welcome <%= userData.username %></h1>
-        <p>Your email: <%= userData.email %></p>
-        <p>Your role: <%= userData.role %></p>
-        <p>Your token: <%= userData.token %></p> -->
-
-        <div class="header center">
+        <div class="no-project header center">
+            <img style="height: 250px" src="/images/favicon.png" />
             <h1>Hello <%= userData.username %>,</h1>
-            <h4>
-                Welcome to the project management portal. Start by creating a
-                new Project
-            </h4>
-            <a href="#" class="btn"> Create Your First Project<span></span></a>
+            <a
+                href="/client/users/createProject/<%= userData._id %>"
+                class="btn">
+                Create New Project<span></span
+            ></a>
+        </div>
+        <div class="list">
+            <h2>List Item Hover Effects</h2>
+            <ul>
+                <h4 style="margin-bottom: 12px">Projects</h4>
+                <% projectsList.forEach(function(project) { %>
+                <li>
+                    <span
+                        ><a
+                            class="project-link"
+                            href="/client/users/project/<%= project.id %>"
+                            ><%= project.projectName %></a
+                        ></span
+                    >
+                </li>
+                <% }); %>
+            </ul>
         </div>
     </body>
 </html>
