@@ -4,6 +4,7 @@ import ProjectModel from "../models/projectModel.js";
 import generateToken from "../utils/generateToken.js";
 import Issue from "../models/issueModel.js";
 import Project from "../models/projectModel.js";
+import Activity from "../models/activityModel.js";
 
 // Sign up a user
 //Rout - POST /api/users
@@ -195,6 +196,63 @@ const createIssue = async (req, res) => {
     }
 };
 
+const createActivity = async (req, res) => {
+    try {
+        const issueId = req.params.id;
+        const issue = await Issue.findById(issueId)
+            .populate("project")
+            .populate("createdBy")
+            .populate("assignedTo");
+        const activities = await Activity.find({ issue: issueId }).populate(
+            "user"
+        );
+
+        res.render("activities", {
+            issue,
+            activities,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+    }
+};
+
+const getActivitiesForIssue = async (req, res) => {
+    const { projectId, issueId } = req.params;
+    const { action, user } = req.body;
+
+    try {
+        // check if project and issue exists
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        const issue = await Issue.findById(issueId);
+        if (!issue) {
+            return res.status(404).json({ message: "Issue not found" });
+        }
+
+        const activity = new Activity({
+            action,
+            project: projectId,
+            user,
+        });
+
+        issue.activity.push(activity);
+
+        await activity.save();
+        await issue.save();
+        res.status(201).json({
+            message: "Activity created successfully",
+            activity,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 export {
     signUpUser,
     loginUser,
@@ -204,4 +262,6 @@ export {
     deleteUser,
     createProject,
     createIssue,
+    createActivity,
+    getActivitiesForIssue,
 };

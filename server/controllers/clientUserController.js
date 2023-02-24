@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import Activity from "../models/activityModel.js";
 import Issue from "../models/issueModel.js";
 import ProjectModel from "../models/projectModel.js";
 import User from "../models/userModel.js";
@@ -125,6 +126,15 @@ const openProject = asyncHandler(async (req, res) => {
             project: project._id.valueOf(),
         });
 
+        const activities = await Activity.find({
+            project: project._id.valueOf(),
+        })
+            .populate("project")
+            .populate("action")
+            .populate("user");
+
+        // console.log(`project Id : ${project._id}`);
+        console.log(activities);
         res.render("project", {
             projectData: {
                 _id: project._id.valueOf(),
@@ -136,6 +146,31 @@ const openProject = asyncHandler(async (req, res) => {
                 author: author.username,
             },
             issues: issues,
+            activities: activities,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "failed to create a project" });
+    }
+});
+
+const openCreateIssueForProject = asyncHandler(async (req, res) => {
+    try {
+        console.log(req.url);
+
+        const project = await ProjectModel.findById(req.params.id);
+
+        const issues = await Issue.find({
+            project: project._id.valueOf(),
+        });
+
+        res.render("createIssue", {
+            projectData: {
+                _id: project._id.valueOf(),
+                projectName: project.projectName,
+                projectDescription: project.projectDescription,
+                user: project.user,
+            },
         });
     } catch (err) {
         console.log(err);
@@ -229,6 +264,7 @@ export {
     openDashboard,
     openCreateProject,
     openProject,
+    openCreateIssueForProject,
     getUsers,
     getUserById,
     updateUserById,

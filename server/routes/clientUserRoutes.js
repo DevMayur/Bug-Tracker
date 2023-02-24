@@ -6,6 +6,7 @@ import {
     openDashboard,
     openCreateProject,
     openProject,
+    openCreateIssueForProject,
     getUsers,
     getUserById,
     updateUserById,
@@ -25,6 +26,8 @@ router.route("/dashboard/:id").get(openDashboard);
 router.route("/createProject/:id").get(openCreateProject);
 
 router.route("/project/:id").get(openProject);
+
+router.route("/project/:id/createIssue").get(openCreateIssueForProject);
 
 router
     .route("/:id")

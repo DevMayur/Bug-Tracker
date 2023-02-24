@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import activitySchema from "./activityModel.js";
+import Activity from "./activityModel.js";
 
 const issueSchema = new mongoose.Schema(
     {
@@ -29,6 +29,7 @@ const issueSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        activity: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     },
     { timestamp: true }
 );

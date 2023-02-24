@@ -9,6 +9,8 @@ import {
     deleteUser,
     createProject,
     createIssue,
+    createActivity,
+    getActivitiesForIssue,
 } from "../controllers/userControllers.js";
 
 const router = express.Router();
@@ -22,6 +24,12 @@ router.route("/login").post(loginUser);
 router.route("/project").post(createProject);
 
 router.route("/project/:projectId/issues").post(createIssue);
+
+router
+    .route("/project/:projectId/issues/:issueId/createActivity")
+    .post(createActivity);
+
+router.route("/issues/:id/activities").get(getActivitiesForIssue);
 
 router
     .route("/:id")
