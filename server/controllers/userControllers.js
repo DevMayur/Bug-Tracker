@@ -2,6 +2,8 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import ProjectModel from "../models/projectModel.js";
 import generateToken from "../utils/generateToken.js";
+import Issue from "../models/issueModel.js";
+import Project from "../models/projectModel.js";
 
 // Sign up a user
 //Rout - POST /api/users
@@ -166,6 +168,33 @@ const createProject = asyncHandler(async (req, res) => {
     }
 });
 
+const createIssue = async (req, res) => {
+    const { projectId } = req.params;
+    const { subject, description, labels, author } = req.body;
+
+    try {
+        // check if project exists
+        const project = await Project.findById(projectId);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+
+        const issue = new Issue({
+            subject,
+            description,
+            labels,
+            project: projectId,
+            author,
+        });
+
+        await issue.save();
+        res.status(201).json({ message: "Issue created successfully", issue });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 export {
     signUpUser,
     loginUser,
@@ -174,4 +203,5 @@ export {
     updateUserById,
     deleteUser,
     createProject,
+    createIssue,
 };

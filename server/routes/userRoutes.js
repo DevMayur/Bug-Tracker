@@ -8,6 +8,7 @@ import {
     updateUserById,
     deleteUser,
     createProject,
+    createIssue,
 } from "../controllers/userControllers.js";
 
 const router = express.Router();
@@ -19,6 +20,8 @@ router.route("/signup").post(signUpUser);
 router.route("/login").post(loginUser);
 
 router.route("/project").post(createProject);
+
+router.route("/project/:projectId/issues").post(createIssue);
 
 router
     .route("/:id")

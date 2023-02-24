@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= projectData.projectName %></title>
+    </head>
+    <body>
+        <h1>Manage <%= projectData.projectName %></h1>
+        <h4><%= projectData.projectDescription %></h4>
+        <h2>Create New Issue</h2>
+        <form id="issue-form">
+            <input
+                type="text"
+                id="projectId"
+                name="projectId"
+                value="<%= projectData._id %>" />
+            <input
+                type="text"
+                id="userId"
+                name="userId"
+                value="<%= projectData.user._id %>" />
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" required />
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required></textarea>
+            <label for="labels">Labels (comma separated)</label>
+            <input type="text" id="labels" name="labels" />
+            <input
+                type="hidden"
+                name="author"
+                value="<%= projectData.user._id %>" />
+            <button type="submit">Create Issue</button>
+        </form>
+        <script src="/project.js"></script>
+    </body>
+</html>

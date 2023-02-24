@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import Issue from "../models/issueModel.js";
 import ProjectModel from "../models/projectModel.js";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
@@ -88,18 +89,53 @@ const openDashboard = asyncHandler(async (req, res) => {
     }
 });
 
+function timeSince(timestamp) {
+    let time = Date.parse(timestamp);
+    let now = Date.now();
+    let secondsPast = (now - time) / 1000;
+    let suffix = "ago";
+
+    let intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60,
+        second: 1,
+    };
+
+    for (let i in intervals) {
+        let interval = intervals[i];
+        if (secondsPast >= interval) {
+            let count = Math.floor(secondsPast / interval);
+            return `${count} ${i} ${count > 1 ? "s" : ""} ${suffix}`;
+        }
+    }
+}
+
 const openProject = asyncHandler(async (req, res) => {
     try {
         console.log(req.url);
 
         const project = await ProjectModel.findById(req.params.id);
+        const author = await User.findById(project.user);
+
+        const issues = await Issue.find({
+            project: project._id.valueOf(),
+        });
+
         res.render("project", {
             projectData: {
                 _id: project._id.valueOf(),
                 projectName: project.projectName,
                 projectDescription: project.projectDescription,
                 user: project.user,
+                createdAt: project.createdAt,
+                age: timeSince(project.createdAt),
+                author: author.username,
             },
+            issues: issues,
         });
     } catch (err) {
         console.log(err);

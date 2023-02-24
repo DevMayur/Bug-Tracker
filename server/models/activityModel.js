@@ -1,16 +1,24 @@
 import mongoose from "mongoose";
 
-const activitySchema = mongoose.Schema(
+const activitySchema = new mongoose.Schema(
     {
-        statement: {
+        action: {
             type: String,
             required: true,
         },
-        editor: {
+        project: {
             type: mongoose.Schema.Types.ObjectId,
+            ref: "Project",
             required: true,
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            required: true,
         },
     },
-    { timestamps: true }
+    { timestamp: true }
 );
+
+const Activity = mongoose.model("Activity", activitySchema);
+export default Activity;
