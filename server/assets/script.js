@@ -84,6 +84,50 @@ create.onclick = function () {
     container.classList.remove("signinForm");
 };
 
+const signupForm = document.querySelector(".signup");
+const usernameSignupInput = signupForm.querySelector('input[name="username"]');
+const emailInput = signupForm.querySelector('input[name="email"]');
+const passwordSignupInput = signupForm.querySelector('input[name="password"]');
+const confirmPasswordInput = signupForm.querySelector(
+    'input[name="confirmPassword"]'
+);
+const signupButton = signupForm.querySelector('input[name="submitSignup"]');
+
+signupButton.addEventListener("click", event => {
+    event.preventDefault();
+    const username = usernameSignupInput.value;
+    const email = emailInput.value;
+    const password = passwordSignupInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+    }
+
+    fetch("/api/users/signup", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password, role: "user" }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Save user data to localStorage
+            localStorage.setItem("userId", data._id);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("role", data.role);
+            localStorage.setItem("token", data.token);
+
+            // Redirect to dashboard on successful signup
+            openDashboard();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+});
+
 window.addEventListener("pageshow", function (event) {
     var historyTraversal =
         event.persisted ||

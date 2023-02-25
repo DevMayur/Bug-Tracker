@@ -10,7 +10,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #223243;
+    color: black;
 }
 .container {
     padding: 40px;
@@ -37,7 +37,7 @@ body {
     display: flex;
 }
 .container .form h2 {
-    color: #fff;
+    color: black;
     font-weight: 500;
     letter-spacing: 0.1em;
 }
@@ -109,11 +109,11 @@ body {
         inset 5px 5px 15px rgba(0, 0, 0, 0.35);
 }
 .container .form p {
-    color: rgba(255, 255, 255, 0.5);
+    color: black;
     font-size: 0.75em;
     font-weight: 300;
 }
 .container .form p a {
     font-weight: 500;
-    color: #fff;
+    color: blue;
 }
