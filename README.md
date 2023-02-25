@@ -1,4 +1,4 @@
-# Bug Tracker
+# [Bug Tracker](https://devmayur.github.io/Bug-Tracker/)
 
 This is a simple bug tracking application built with Node js, express js and EJS view engine with mongodb.
 
