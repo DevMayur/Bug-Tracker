@@ -20,8 +20,6 @@ const createProject = async () => {
 
         // Do something with the project data
         window.location.href = `/client/users/project/${projectData.projectData._id}`;
-
-        console.log(projectData);
     } catch (error) {
         console.error(error);
     }

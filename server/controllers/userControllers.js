@@ -56,10 +56,7 @@ const signUpUser = asyncHandler(async (req, res) => {
 //Route - POST /api/users/login
 
 const loginUser = async (req, res) => {
-    console.log("loginUser");
     const { username, password } = req.body;
-
-    console.log(req.body);
 
     try {
         const user = await User.findOne({ username: username });
@@ -75,7 +72,6 @@ const loginUser = async (req, res) => {
             token: generateToken(user.id),
         });
     } catch (err) {
-        console.log(err);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -84,7 +80,6 @@ const loginUser = async (req, res) => {
 //Route GET /api/users
 
 const getUsers = asyncHandler(async (req, res) => {
-    console.log("getUsers");
     const users = await User.find();
     res.json(users);
 });
@@ -93,7 +88,6 @@ const getUsers = asyncHandler(async (req, res) => {
 //Route GET /api/users/:id
 
 const getUserById = asyncHandler(async (req, res) => {
-    console.log("getUserById");
     const user = await User.findById(req.params.id).select("-password");
     if (user) {
         res.json(user);
@@ -152,8 +146,6 @@ const createProject = asyncHandler(async (req, res) => {
             user: userId,
         });
         await project.save();
-
-        console.log(project);
 
         res.json({
             projectData: {
@@ -234,40 +226,51 @@ const createActivity = async (req, res) => {
 };
 
 const getActivitiesForIssue = async (req, res) => {
-    const { projectId, issueId } = req.params;
-    const { action, user } = req.body;
+    const issueId = req.params.id;
 
-    try {
-        // check if project and issue exists
-        const project = await Project.findById(projectId);
-        if (!project) {
-            return res.status(404).json({ message: "Project not found" });
-        }
+    console.log(issueId);
 
-        const issue = await Issue.findById(issueId);
-        if (!issue) {
-            return res.status(404).json({ message: "Issue not found" });
-        }
+    // Find the issue and populate the "project" and "createdBy" fields
+    const issue = await Issue.findById(issueId)
+        .populate("project", "projectName")
+        .populate("author", "username");
 
-        const activity = new Activity({
-            action,
-            project: projectId,
-            user,
-        });
-
-        issue.activity.push(activity);
-
-        await activity.save();
-        await issue.save();
-        res.status(201).json({
-            message: "Activity created successfully",
-            activity,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
+    if (!issue) {
+        return res.status(404).json({ message: "Issue not found" });
     }
+
+    // Find all activities related to the issue and populate the "user" field
+    const activities = await Activity.find({ issue: issueId })
+        .populate("user", "username")
+        .sort({ createdAt: "desc" });
+
+    res.json({ issue, activities });
 };
+
+function timeSince(timestamp) {
+    let time = Date.parse(timestamp);
+    let now = Date.now();
+    let secondsPast = (now - time) / 1000;
+    let suffix = "ago";
+
+    let intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60,
+        second: 1,
+    };
+
+    for (let i in intervals) {
+        let interval = intervals[i];
+        if (secondsPast >= interval) {
+            let count = Math.floor(secondsPast / interval);
+            return `${count} ${i} ${count > 1 ? "s" : ""} ${suffix}`;
+        }
+    }
+}
 
 export {
     signUpUser,

@@ -22,8 +22,6 @@ submitButton.addEventListener("click", event => {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-
             // Save user data to localStorage
             localStorage.setItem("userId", data._id);
             localStorage.setItem("username", data.username);
@@ -73,7 +71,6 @@ const openDashboard = async () => {
         }
 
         const userData = await response.json();
-        console.log(userData);
     } catch (error) {
         console.error(error);
     }

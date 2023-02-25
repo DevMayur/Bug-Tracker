@@ -21,8 +21,6 @@ issueForm.addEventListener("submit", async event => {
         const data = await response.json();
 
         window.location.href = `/client/users/project/${data.issue.project}/issues/${data.issue._id}`;
-
-        console.log(data);
     } catch (error) {
         console.error(error);
     }

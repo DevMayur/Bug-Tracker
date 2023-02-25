@@ -18,6 +18,7 @@
     padding: 20px;
     background-color: #e0e0e0;
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .timeline .timeline-item:after {

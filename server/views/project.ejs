@@ -22,7 +22,6 @@
                         alt="Logo"
                         width="300"
                         class="d-inline-block align-middle" /> -->
-                    <% var activitiesForSelectedIssue = []; %>
                     <div class="d-inline-block">
                         <span class="fs-2 fw-bolder"
                             ><%= projectData.projectName %></span
@@ -102,9 +101,9 @@
                             Select an issue
                         </h6>
                         <% issues.forEach(function(issue) { %>
-                        <button onclick="setSelectedItem(`<%= issue._id %>`)">
+                        <a onclick="setSelectedItem(`<%= issue._id %>`)">
                             <li class="issue"><%= issue.subject %></li>
-                        </button>
+                        </a>
                         <% }); %>
                     </ul>
                 </div>
@@ -121,19 +120,7 @@
                     <h6 class="fw-normal" style="color: #2691d9">
                         See all the activity on this issue
                     </h6>
-                    <ul class="timeline" id="activityList">
-                        <% activities.forEach(function(activity) { %>
-                        <li class="timeline-item mb-5">
-                            <h5 class="fw-bold"><%= activity.action %></h5>
-                            <p class="text-muted mb-2 fw-bold">
-                                <!-- <%= activity.created %> -->
-                            </p>
-                            <p class="text-muted">
-                                <%= activity.user.username %>
-                            </p>
-                        </li>
-                        <% }); %>
-                    </ul>
+                    <ul class="timeline" id="activityList"></ul>
                 </div>
                 <div style="width: 20px; border-right: solid 1px #cacaca"></div>
                 <div
