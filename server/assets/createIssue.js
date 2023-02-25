@@ -5,9 +5,13 @@ issueForm.addEventListener("submit", async event => {
 
     const subject = issueForm.elements["subject"].value;
     const description = issueForm.elements["description"].value;
-    const labels = issueForm.elements["labels"].value;
+    var labels = issueForm.elements["labels"].value;
     const author = issueForm.elements["userId"].value;
     const projectId = issueForm.elements["projectId"].value;
+
+    var lablesArr = labels.split(",").map(function (value) {
+        return value.trim();
+    });
 
     try {
         const response = await fetch(`/api/users/project/${projectId}/issues`, {
@@ -15,13 +19,17 @@ issueForm.addEventListener("submit", async event => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ subject, description, labels, author }),
+            body: JSON.stringify({
+                subject,
+                description,
+                labels: lablesArr,
+                author,
+            }),
         });
 
         const data = await response.json();
 
         window.history.go(-1);
-        // window.location.href = `/client/users/project/${data.issue.project}/issues/${data.issue._id}`;
     } catch (error) {
         console.error(error);
     }
