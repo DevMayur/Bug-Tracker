@@ -62,6 +62,39 @@ const openDashboard = asyncHandler(async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         const projects = await ProjectModel.find();
+
+        var dashboardData = [];
+
+        for (let project of projects) {
+            const issues = await Issue.find({
+                project: project.id,
+            });
+
+            var isProjectFixed = true;
+
+            var totalIssues = issues.length;
+            var fixedIssues = 0;
+            issues.forEach(issue => {
+                if (!issue.isFixed) {
+                    isProjectFixed = false;
+                } else {
+                    fixedIssues = fixedIssues + 1;
+                }
+            });
+
+            var analytics = {
+                project: project,
+                isProjectFixed: isProjectFixed,
+                totalIssues: totalIssues,
+                fixedIssues: fixedIssues,
+                createdAt: timeSince(project.createdAt),
+            };
+
+            dashboardData.push(analytics);
+        }
+
+        console.log(dashboardData);
+
         if (projects.length == 0) {
             res.render("dashboard_no_projects", {
                 userData: {
@@ -74,7 +107,7 @@ const openDashboard = asyncHandler(async (req, res) => {
             });
         } else {
             res.render("dashboard", {
-                projectsList: projects,
+                dashboardData: dashboardData,
                 userData: {
                     _id: user._id,
                     username: user.username,
