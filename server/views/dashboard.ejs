@@ -15,7 +15,7 @@
             rel="stylesheet"
             type="text/css"
             href="/dashboard_no_projects.css" />
-            <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
+        <link rel="icon" type="image/x-icon" href="/images/favicon.png" />
     </head>
     <body>
         <div class="no-project header center">
@@ -54,6 +54,10 @@
         </div>
 
         <script>
+            if (localStorage.getItem("token")) {
+            } else {
+                window.location.href = "/client/users/login";
+            }
             window.addEventListener("pageshow", function (event) {
                 var historyTraversal =
                     event.persisted ||

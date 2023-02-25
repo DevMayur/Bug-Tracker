@@ -1,3 +1,8 @@
+if (localStorage.getItem("token")) {
+} else {
+    window.location.href = "/client/users/login";
+}
+
 const nameInput = document.querySelector('input[name="name"]');
 const descInput = document.querySelector('input[name="description"]');
 const userIdInput = document.querySelector('input[name="userId"]');

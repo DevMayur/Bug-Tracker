@@ -1,3 +1,8 @@
+if (localStorage.getItem("token")) {
+} else {
+    window.location.href = "/client/users/login";
+}
+
 const issueForm = document.querySelector("#issue-form");
 
 issueForm.addEventListener("submit", async event => {

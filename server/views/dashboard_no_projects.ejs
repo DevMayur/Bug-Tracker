@@ -23,6 +23,10 @@
             ></a>
         </div>
         <script>
+            if (localStorage.getItem("token")) {
+            } else {
+                window.location.href = "/client/users/login";
+            }
             window.addEventListener("pageshow", function (event) {
                 var historyTraversal =
                     event.persisted ||

@@ -1,3 +1,8 @@
+if (localStorage.getItem("token")) {
+} else {
+    window.location.href = "/client/users/login";
+}
+
 var lastSelectedIssue;
 var projectId;
 
