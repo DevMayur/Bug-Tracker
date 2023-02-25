@@ -148,9 +148,13 @@ const openProject = asyncHandler(async (req, res) => {
 
         var isProjectFixed = true;
 
+        var totalIssues = issues.length;
+        var fixedIssues = 0;
         issues.forEach(issue => {
             if (!issue.isFixed) {
                 isProjectFixed = false;
+            } else {
+                fixedIssues = fixedIssues + 1;
             }
         });
 
@@ -167,9 +171,13 @@ const openProject = asyncHandler(async (req, res) => {
             },
             issues: issues,
             activities: activities,
+            issueStatus: {
+                totalIssues: totalIssues,
+                fixedIssues: fixedIssues,
+            },
         });
     } catch (err) {
-        res.status(500).json({ message: "failed to create a project" });
+        res.status(500).json({ message: "Something went wrong" });
     }
 });
 

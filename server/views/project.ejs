@@ -51,7 +51,7 @@
                 <div class="col-3 text-start p-2">Project ID</div>
                 <div class="col-2 text-start p-2">Status</div>
                 <div class="col-2 text-start p-2">Age</div>
-                <div class="col-2 text-start p-2">Last Action</div>
+                <div class="col-2 text-start p-2">Status</div>
                 <div class="col-2 text-start p-2">Author</div>
             </div>
             <div class="row column-gap-2">
@@ -70,7 +70,12 @@
                 <div class="col-2 text-start fw-bolder p-2">
                     <%= projectData.age %>
                 </div>
-                <div class="col-2 text-start fw-bolder p-2">20 mins before</div>
+                <div
+                    id="project-status-header"
+                    class="col-2 text-start fw-bolder p-2">
+                    <%= issueStatus.fixedIssues %> of <%=
+                    issueStatus.totalIssues %> fixed
+                </div>
                 <div class="col-2 text-start fw-bolder p-2">
                     <%= projectData.author %>
                 </div>
@@ -97,16 +102,32 @@
                         overflow-y: scroll;
                         max-height: 50vh;
                     ">
-                    <ul class="list-group list-group-light issue-container">
-                        <h5 class="fw-bold">Issues</h5>
-                        <h6 class="fw-normal" style="color: #2691d9">
-                            Select an issue
-                        </h6>
-                        <% issues.forEach(function(issue) { %>
+                    <h5 class="fw-bold">Issues</h5>
+                    <h6 class="fw-normal" style="color: #2691d9">
+                        Select an issue
+                    </h6>
+                    <ul
+                        id="issueList"
+                        class="list-group list-group-light issue-container">
+                        <% issues.forEach(function(issue) { %> <% if(
+                        issue.isFixed ) { %>
                         <a onclick="setSelectedItem(`<%= issue._id %>`)">
-                            <li class="issue"><%= issue.subject %></li>
+                            <li
+                                style="
+                                    color: green;
+                                    text-decoration: line-through;
+                                "
+                                class="issue">
+                                <%= issue.subject %>
+                            </li>
                         </a>
-                        <% }); %>
+                        <% } else { %>
+                        <a onclick="setSelectedItem(`<%= issue._id %>`)">
+                            <li style="color: red" class="issue">
+                                <%= issue.subject %>
+                            </li>
+                        </a>
+                        <% } }); %>
                     </ul>
                 </div>
                 <div style="width: 20px; border-right: solid 1px #cacaca"></div>
@@ -152,27 +173,6 @@
                     "></div>
             </div>
         </div>
-
-        <!-- <div
-            class="col-5 align-end"
-            style="
-                display: inline-block;
-                position: absolute;
-                padding: 24px;
-                max-height: 45vh;
-            ">
-            <h5 class="card-title text-start">Add an update on the issue</h5>
-            <div class="input-group">
-                 <span class="input-group-text">With textarea</span>
-                <textarea
-                    style="height: 30px"
-                    class="form-control"
-                    aria-label="With textarea"
-                    id="update-input"></textarea>
-            </div>
-            <div style="height: 10px"></div>
-            <a class="btn btn-primary" id="update-button">Post Update</a>
-        </div> -->
 
         <script src="/project.js"></script>
         <script>

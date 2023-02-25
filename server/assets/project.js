@@ -131,9 +131,14 @@ function setFixStatus(isFixed) {
         .catch(err => console.error(err));
 }
 
+var globalIssues;
 function checkIssuesFixStatus() {
-    //
+    var issueList = document.getElementById("issueList");
+    var projectStatusHeader = document.getElementById("project-status-header");
     var issueId = lastSelectedIssue;
+
+    let totalIssues = 0;
+    let fixedIssues = 0;
     fetch(`/client/users/project/${projectId}/issues`, {
         method: "GET",
         headers: {
@@ -147,16 +152,43 @@ function checkIssuesFixStatus() {
             } else {
                 // Update the UI with the new isFixed value
                 setSelectedItem(issueId);
+                var isProjectFixed = true;
+                issueList.innerHTML = "";
+                totalIssues = data.issues.length;
+                globalIssues = data.issues;
                 data.issues.forEach(issue => {
-                    var isProjectFixed = true;
                     if (!issue.isFixed) {
                         isProjectFixed = false;
+                    } else {
+                        fixedIssues = fixedIssues + 1;
                     }
                     var buttonText = isProjectFixed ? "FIXED" : "IN PROGRESS";
 
                     const status = document.getElementById("project-status");
                     status.innerHTML = buttonText;
+
+                    var issueElement = issue.isFixed
+                        ? `<a onclick="setSelectedItem('${issue._id}')">
+                            <li
+                                style="
+                                    color: green;
+                                    text-decoration: line-through;
+                                "
+                                class="issue">
+                                ${issue.subject}
+                            </li>
+                        </a>`
+                        : `<a onclick="setSelectedItem('${issue._id}')">
+                            <li style="color: red" class="issue">
+                                ${issue.subject}
+                            </li>
+                        </a>
+                        `;
+
+                    issueList.innerHTML += issueElement;
                 });
+
+                projectStatusHeader.innerHTML = `${fixedIssues} of ${totalIssues} Fixed`;
             }
         })
         .catch(err => console.error(err));
