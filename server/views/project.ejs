@@ -36,7 +36,7 @@
                     <a
                         href="/client/users/project/<%= projectData._id %>/createIssue"
                         ><button class="btn btn-outline-primary">
-                            Create Issue
+                            + Create Issue
                         </button></a
                     >
                     <button class="btn btn-outline-danger">Logout</button>
@@ -48,21 +48,23 @@
 
         <div class="container text-center text-wrap">
             <div class="row column-gap-2 overflow-x-auto">
-                <div class="col-2 text-start p-2">Project ID</div>
+                <div class="col-3 text-start p-2">Project ID</div>
                 <div class="col-2 text-start p-2">Status</div>
                 <div class="col-2 text-start p-2">Age</div>
                 <div class="col-2 text-start p-2">Last Action</div>
                 <div class="col-2 text-start p-2">Author</div>
             </div>
             <div class="row column-gap-2">
-                <div class="col-2 text-start fw-bolder p-2">
+                <div class="col-3 text-start fw-bolder p-2">
                     <%= projectData._id %>
                 </div>
                 <div class="col-2 text-start p-2">
                     <p
+                        id="project-status"
                         class="fs-6 align-middle progress-style"
                         style="font-size: 0.8rem !important">
-                        IN PROGRESS
+                        <% if (projectData.isProjectFixed) { %> COMPLETED <% }
+                        else { %> IN PROGRESS <% } %>
                     </p>
                 </div>
                 <div class="col-2 text-start fw-bolder p-2">
@@ -93,7 +95,7 @@
                         display: inline-block;
                         position: inherit;
                         overflow-y: scroll;
-                        max-height: 40vh;
+                        max-height: 50vh;
                     ">
                     <ul class="list-group list-group-light issue-container">
                         <h5 class="fw-bold">Issues</h5>
@@ -113,10 +115,26 @@
                     style="
                         display: inline-block;
                         overflow-y: scroll;
-                        max-height: 45vh;
+                        max-height: 50vh;
                         padding: 12px;
                     ">
-                    <h5 class="fw-bold">Timeline</h5>
+                    <h5 class="fw-bold">
+                        Timeline
+                        <a onclick="showActivityAdder()"
+                            ><svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                id="addActivityButton"
+                                color="#2691d9"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-pen-fill"
+                                style="cursor: pointer"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z" /></svg
+                        ></a>
+                    </h5>
                     <h6 class="fw-normal" style="color: #2691d9">
                         See all the activity on this issue
                     </h6>
@@ -124,29 +142,37 @@
                 </div>
                 <div style="width: 20px; border-right: solid 1px #cacaca"></div>
                 <div
+                    id="issue-details"
                     class="col-5"
                     style="
                         display: inline-block;
                         position: inherit;
                         padding: 24px;
-                        max-height: 45vh;
-                    ">
-                    <h5 class="card-title">Add an update on the issue</h5>
-                    <div class="input-group">
-                        <!-- <span class="input-group-text">With textarea</span> -->
-                        <textarea
-                            style="height: 30vh"
-                            class="form-control"
-                            aria-label="With textarea"
-                            id="update-input"></textarea>
-                    </div>
-                    <div style="height: 10px"></div>
-                    <a class="btn btn-primary" id="update-button"
-                        >Post Update</a
-                    >
-                </div>
+                        max-height: 50vh;
+                    "></div>
             </div>
         </div>
+
+        <!-- <div
+            class="col-5 align-end"
+            style="
+                display: inline-block;
+                position: absolute;
+                padding: 24px;
+                max-height: 45vh;
+            ">
+            <h5 class="card-title text-start">Add an update on the issue</h5>
+            <div class="input-group">
+                 <span class="input-group-text">With textarea</span>
+                <textarea
+                    style="height: 30px"
+                    class="form-control"
+                    aria-label="With textarea"
+                    id="update-input"></textarea>
+            </div>
+            <div style="height: 10px"></div>
+            <a class="btn btn-primary" id="update-button">Post Update</a>
+        </div> -->
 
         <script src="/project.js"></script>
         <script>

@@ -114,6 +114,23 @@ function timeSince(timestamp) {
     }
 }
 
+const getIssuesForProject = asyncHandler(async (req, res) => {
+    try {
+        const project = await ProjectModel.findById(req.params.id);
+        const author = await User.findById(project.user);
+
+        const issues = await Issue.find({
+            project: project._id.valueOf(),
+        }).sort({ createdAt: "desc" });
+
+        res.json({
+            issues,
+        });
+    } catch (err) {
+        res.status(500).json({ message: "failed to create a project" });
+    }
+});
+
 const openProject = asyncHandler(async (req, res) => {
     try {
         const project = await ProjectModel.findById(req.params.id);
@@ -129,6 +146,14 @@ const openProject = asyncHandler(async (req, res) => {
             .populate("action")
             .populate("user");
 
+        var isProjectFixed = true;
+
+        issues.forEach(issue => {
+            if (!issue.isFixed) {
+                isProjectFixed = false;
+            }
+        });
+
         res.render("project", {
             projectData: {
                 _id: project._id.valueOf(),
@@ -138,6 +163,7 @@ const openProject = asyncHandler(async (req, res) => {
                 createdAt: project.createdAt,
                 age: timeSince(project.createdAt),
                 author: author.username,
+                isProjectFixed: isProjectFixed,
             },
             issues: issues,
             activities: activities,
@@ -256,4 +282,5 @@ export {
     getUserById,
     updateUserById,
     deleteUser,
+    getIssuesForProject,
 };

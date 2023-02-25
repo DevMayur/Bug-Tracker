@@ -247,6 +247,43 @@ const getActivitiesForIssue = async (req, res) => {
     res.json({ issue, activities });
 };
 
+const getIssueById = async (req, res) => {
+    const issueId = req.params.id;
+
+    // Find the issue and populate the "project" and "createdBy" fields
+    const issue = await Issue.findById(issueId)
+        .populate("project", "projectName")
+        .populate("author", "username");
+
+    if (!issue) {
+        return res.status(404).json({ message: "Issue not found" });
+    }
+
+    res.json({ issue });
+};
+
+const updateIsFixedIssue = async (req, res) => {
+    const issueId = req.params.id;
+    const { isFixed } = req.body;
+
+    try {
+        const issue = await Issue.findByIdAndUpdate(
+            issueId,
+            { isFixed },
+            { new: true }
+        );
+
+        if (!issue) {
+            return res.status(404).json({ message: "Issue not found" });
+        }
+
+        res.json({ success: true, issue });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 function timeSince(timestamp) {
     let time = Date.parse(timestamp);
     let now = Date.now();
@@ -283,4 +320,6 @@ export {
     createIssue,
     createActivity,
     getActivitiesForIssue,
+    getIssueById,
+    updateIsFixedIssue,
 };

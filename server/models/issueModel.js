@@ -27,11 +27,11 @@ const issueSchema = new mongoose.Schema(
         },
         isFixed: {
             type: Boolean,
-            default: true,
+            default: false,
         },
         activity: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     },
-    { timestamp: true }
+    { timestamps: true }
 );
 
 const Issue = mongoose.model("Issue", issueSchema);

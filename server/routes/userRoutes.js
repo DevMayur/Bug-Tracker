@@ -11,6 +11,8 @@ import {
     createIssue,
     createActivity,
     getActivitiesForIssue,
+    getIssueById,
+    updateIsFixedIssue,
 } from "../controllers/userControllers.js";
 
 const router = express.Router();
@@ -30,6 +32,10 @@ router
     .post(createActivity);
 
 router.route("/issues/:id/activities").get(getActivitiesForIssue);
+
+router.route("/issues/:id/fixed").put(updateIsFixedIssue);
+
+router.route("/issues/:id").get(getIssueById);
 
 router
     .route("/:id")

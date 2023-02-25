@@ -28,3 +28,14 @@ const createProject = async () => {
 // Call the createProject function when the submit button is clicked
 const submitButton = document.querySelector('input[name="submit"]');
 submitButton.addEventListener("click", createProject);
+
+window.addEventListener("pageshow", function (event) {
+    var historyTraversal =
+        event.persisted ||
+        (typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2);
+    if (historyTraversal) {
+        // Handle page restore.
+        window.location.reload();
+    }
+});

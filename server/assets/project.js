@@ -4,8 +4,34 @@ var projectId;
 const updateForm = document.querySelector("#update-form");
 const updateButton = document.querySelector("#update-button");
 
-updateButton.addEventListener("click", event => {
-    event.preventDefault();
+const addActivityButton = document.getElementById("addActivityButton");
+
+var isAddDialogShown = false;
+
+function showActivityAdder() {
+    if (
+        !isAddDialogShown &&
+        (lastSelectedIssue != null || lastSelectedIssue != undefined)
+    ) {
+        const activityList = document.getElementById("activityList");
+        const timeline = activityList.innerHTML;
+        var elementToAdded = `<textarea
+                                style="height: 30px"
+                                class="form-control"
+                                aria-label="With textarea"
+                                id="update-input"></textarea>
+                        </div>
+                        <div style="height: 10px"></div>
+                        <a class="btn btn-primary" id="update-button" style="margin-bottom: 30px" onclick="callCreateActivity()">Add to timeline</a>
+                        <a class="btn btn-secondary" id="close-button" style="margin-bottom: 30px" onclick="setSelectedItem('${lastSelectedIssue}')">Close</a>`;
+        activityList.innerHTML = elementToAdded + timeline;
+        isAddDialogShown = true;
+    } else {
+        console.log(`lastSelected Issue is ${lastSelectedIssue}`);
+    }
+}
+
+function callCreateActivity() {
     const updateInput = document.querySelector("#update-input").value;
     if (lastSelectedIssue != null || lastSelectedIssue != undefined) {
         const issueId = lastSelectedIssue;
@@ -13,7 +39,7 @@ updateButton.addEventListener("click", event => {
     } else {
         console.log(lastSelectedIssue);
     }
-});
+}
 
 function setSelectedItem(issue) {
     lastSelectedIssue = issue;
@@ -23,6 +49,7 @@ function setSelectedItem(issue) {
             // Update the activities list with the new activities
             const activityList = document.getElementById("activityList");
             activityList.innerHTML = "";
+            isAddDialogShown = false;
             data.activities.forEach(function (activity) {
                 const activityItem = `
           <li class="timeline-item mb-5">
@@ -37,6 +64,102 @@ function setSelectedItem(issue) {
             });
         })
         .catch(error => console.error(error));
+
+    //now update issue details
+    fetch(`/api/users/issues/${issue}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update the activities list with the new activities
+            var buttonText = data.issue.isFixed ? "Reopen" : "Mark fixed";
+            var buttonClass = data.issue.isFixed ? "btn-danger" : "btn-success";
+            const issue = document.getElementById("issue-details");
+            issue.innerHTML = "";
+            {
+                const issueItem = `<span>${timeSince(
+                    data.issue.createdAt
+                )}</span>
+                <span>
+                    <svg
+                        style="margin-left: 30px"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-person-fill"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    </svg>
+                    <span> ${data.issue.author.username}</span>
+                </span>
+                <div style="height: 10px"></div>
+                <h3>${data.issue.subject}</h3>
+                <div style="height: 20px"></div>
+                <h6>
+                ${data.issue.description}
+                </h6>
+
+                <button class="btn ${buttonClass}" onclick="setFixStatus(${!data
+                    .issue.isFixed})">${buttonText}</button>`;
+                issue.innerHTML += issueItem;
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function setFixStatus(isFixed) {
+    var issueId = lastSelectedIssue;
+    fetch(`/api/users/issues/${issueId}/fixed`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            isFixed,
+        }),
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                // Update the UI with the new isFixed value
+                setSelectedItem(issueId);
+                checkIssuesFixStatus();
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+function checkIssuesFixStatus() {
+    //
+    var issueId = lastSelectedIssue;
+    fetch(`/client/users/project/${projectId}/issues`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                // Update the UI with the new isFixed value
+                setSelectedItem(issueId);
+                data.issues.forEach(issue => {
+                    var isProjectFixed = true;
+                    if (!issue.isFixed) {
+                        isProjectFixed = false;
+                    }
+                    var buttonText = isProjectFixed ? "FIXED" : "IN PROGRESS";
+
+                    const status = document.getElementById("project-status");
+                    status.innerHTML = buttonText;
+                });
+            }
+        })
+        .catch(err => console.error(err));
 }
 
 function setProjectId(project) {
@@ -58,7 +181,6 @@ const createActivity = async (projectId, issueId, updateInput) => {
                 }),
             }
         );
-
         setSelectedItem(lastSelectedIssue);
     } catch (error) {
         console.error(error);
@@ -89,3 +211,14 @@ function timeSince(timestamp) {
         }
     }
 }
+
+window.addEventListener("pageshow", function (event) {
+    var historyTraversal =
+        event.persisted ||
+        (typeof window.performance != "undefined" &&
+            window.performance.navigation.type === 2);
+    if (historyTraversal) {
+        // Handle page restore.
+        window.location.reload();
+    }
+});
