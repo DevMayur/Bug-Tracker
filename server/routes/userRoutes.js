@@ -13,6 +13,7 @@ import {
     getActivitiesForIssue,
     getIssueById,
     updateIsFixedIssue,
+    searchIssues,
 } from "../controllers/userControllers.js";
 
 const router = express.Router();
@@ -36,6 +37,8 @@ router.route("/issues/:id/activities").get(getActivitiesForIssue);
 router.route("/issues/:id/fixed").put(updateIsFixedIssue);
 
 router.route("/issues/:id").get(getIssueById);
+
+router.route("/projects/:projectId/searchIssues").post(searchIssues);
 
 router
     .route("/:id")

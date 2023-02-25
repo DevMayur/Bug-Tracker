@@ -6,6 +6,8 @@ import Issue from "../models/issueModel.js";
 import Project from "../models/projectModel.js";
 import Activity from "../models/activityModel.js";
 
+import mongoose from "mongoose";
+
 // Sign up a user
 //Rout - POST /api/users
 
@@ -165,6 +167,8 @@ const createIssue = async (req, res) => {
     const { projectId } = req.params;
     const { subject, description, labels, author } = req.body;
 
+    var id = mongoose.Types.ObjectId(author);
+
     try {
         // check if project exists
         const project = await Project.findById(projectId);
@@ -177,7 +181,7 @@ const createIssue = async (req, res) => {
             description,
             labels,
             project: projectId,
-            author,
+            author: id,
         });
 
         await issue.save();
@@ -309,6 +313,38 @@ function timeSince(timestamp) {
     }
 }
 
+const searchIssues = async (req, res) => {
+    try {
+        const { subject, description, author, labels } = req.body;
+        const { projectId } = req.params;
+
+        let authorObj = null;
+        if (author) {
+            authorObj = await User.findOne({
+                $or: [
+                    { username: new RegExp(author, "i") },
+                    { email: new RegExp(author, "i") },
+                ],
+            });
+        }
+
+        const searchQuery = {};
+        if (subject) searchQuery.subject = new RegExp(subject, "i");
+        if (description) searchQuery.description = new RegExp(description, "i");
+        if (author) searchQuery.author = authorObj._id;
+        if (labels) searchQuery.labels = { $all: labels };
+
+        const issues = await Issue.find({ project: projectId, ...searchQuery });
+
+        res.status(200).json({
+            issues,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 export {
     signUpUser,
     loginUser,
@@ -322,4 +358,5 @@ export {
     getActivitiesForIssue,
     getIssueById,
     updateIsFixedIssue,
+    searchIssues,
 };

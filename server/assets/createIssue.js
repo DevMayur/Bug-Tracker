@@ -6,7 +6,7 @@ issueForm.addEventListener("submit", async event => {
     const subject = issueForm.elements["subject"].value;
     const description = issueForm.elements["description"].value;
     var labels = issueForm.elements["labels"].value;
-    const author = issueForm.elements["userId"].value;
+    const author = localStorage.getItem("userId");
     const projectId = issueForm.elements["projectId"].value;
 
     var lablesArr = labels.split(",").map(function (value) {

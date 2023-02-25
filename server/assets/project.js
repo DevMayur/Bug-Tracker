@@ -123,9 +123,24 @@ function setFixStatus(isFixed) {
             if (data.message) {
                 alert(data.message);
             } else {
-                // Update the UI with the new isFixed value
                 setSelectedItem(issueId);
                 checkIssuesFixStatus();
+                var closed = `This issue is closed by ${localStorage.username}`;
+                var reopened = `This issue is reopened by ${localStorage.username}`;
+                if (
+                    lastSelectedIssue != null ||
+                    lastSelectedIssue != undefined
+                ) {
+                    const issueId = lastSelectedIssue;
+                    createActivity(
+                        projectId,
+                        issueId,
+                        isFixed ? closed : reopened
+                    );
+                } else {
+                    console.log(lastSelectedIssue);
+                }
+                // Update the UI with the new isFixed value
             }
         })
         .catch(err => console.error(err));
@@ -219,6 +234,65 @@ const createActivity = async (projectId, issueId, updateInput) => {
     }
 };
 
+const searchForm = document.querySelector("#search-form");
+const searchResults = document.querySelector("#search-results");
+
+searchForm.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    var issueList = document.getElementById("issueList");
+    const subject = searchForm.querySelector("#search-title").value.trim();
+    const description = searchForm
+        .querySelector("#search-description")
+        .value.trim();
+    const author = searchForm.querySelector("#search-author").value.trim();
+    const labelsInput = searchForm.querySelector("#search-labels").value.trim();
+    const labels = labelsInput ? labelsInput.split(",") : [];
+
+    // Send search parameters to server
+    fetch(`/api/users/projects/${projectId}/searchIssues`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...(subject && { subject }),
+            ...(description && { description }),
+            ...(author && { author }),
+            ...(labels.length > 0 && { labels }),
+        }),
+    })
+        .then(res => res.json())
+        .then(data => {
+            {
+                console.log(data);
+                issueList.innerHTML = "";
+                data.issues.forEach(issue => {
+                    console.log(issue);
+                    var issueElement = issue.isFixed
+                        ? `<a onclick="setSelectedItem('${issue._id}')">
+                        <li
+                            style="
+                                color: green;
+                                text-decoration: line-through;
+                            "
+                            class="issue">
+                            ${issue.subject}
+                        </li>
+                    </a>`
+                        : `<a onclick="setSelectedItem('${issue._id}')">
+                        <li style="color: red" class="issue">
+                            ${issue.subject}
+                        </li>
+                    </a>
+                    `;
+
+                    issueList.innerHTML += issueElement;
+                });
+            }
+        });
+});
+
 function timeSince(timestamp) {
     let time = Date.parse(timestamp);
     let now = Date.now();
@@ -254,3 +328,14 @@ window.addEventListener("pageshow", function (event) {
         window.location.reload();
     }
 });
+
+function logout() {
+    // Clear cache
+    window.location.reload(true);
+
+    // Clear localStorage
+    localStorage.clear();
+
+    // Redirect to login page
+    window.location.href = "/client/users/login";
+}
